@@ -1,5 +1,5 @@
 |Subsystem|CanID|MotorName|
-|-------------------------|
+|---------|-----|---------|
 |Shoulder  |null|m_leftMotor|
 |Shoulder|null|m_rightMotor|
 |Manipulator|null|m_motor|
