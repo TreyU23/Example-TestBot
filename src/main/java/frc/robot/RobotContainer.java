@@ -26,6 +26,9 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shoulder;
 import frc.robot.subsystems.manipulator;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Turrent;
+import frc.robot.Utilties.SmartShootByPose;
 
 public class RobotContainer {
         private final CommandXboxController m_driver = new CommandXboxController(DriverConstants.kPort);
@@ -34,11 +37,9 @@ public class RobotContainer {
         private final Manipulator m_manipulator = new manipulator();
         private final Climber m_climber = new Climber();
         private final Elevator m_elevator = new Elevator();
+        private final Turrent m_turrent = new Turrent();
+        private final SmartShootByPose m_smartShoot = new SmartShootByPose(m_turrent, m_manipulator);
         public final CommandSwerveDrivetrain m_drivetrain;
-
-
-        private boolean readyToClimb = false;
-        private boolean isArmOut = true;
 
         public RobotContainer() {
                 m_drivetrain = TunerConstants.createDrivetrain();
@@ -61,70 +62,25 @@ public class RobotContainer {
         
 
         private void ConfigureBindings() {
-                m_driver.povUp().onTrue(DriveCommands.resetFieldOrientation(m_drivetrain));
+                m_driver.leftTrigger().onTrue(new InstantCommand(()-> m_manipulatior.setVoltage(ManipulatorConstants.kIntakeVoltage)))
+                                        .onFalse(new InstantCommand(()-> m_manipulatior.stop()));
 
-                m_driver.x().whileTrue(new SourceAlign(m_drivetrain,m_driver::getLeftY,m_driver::getLeftX)
-                                        .alongWith(m_manipulator.setVoltageCmd(ManipulatorConstants.kIntakeVoltage)
-                                                .alongWith(m_shoulder.setPositionCommand(ShoulderConstants.kLoadingStation))))
-                                                        .onFalse(m_shoulder.setPositionCommand(ShoulderConstants.kTrough)
-                                                                .alongWith(m_manipulator.setVoltageCmd(ManipulatorConstants.kHoldVoltage)));
-
-                m_driver.b().whileTrue(new SourceInsideAlign(m_drivetrain,m_driver::getLeftY,m_driver::getLeftX)
-                                        .alongWith(m_manipulator.setVoltageCmd(ManipulatorConstants.kIntakeVoltage)
-                                                .alongWith(m_shoulder.setPositionCommand(ShoulderConstants.kLoadingStation))))
-                                                        .onFalse(m_shoulder.setPositionCommand(ShoulderConstants.kTrough)
-                                                                .alongWith(m_manipulator.setVoltageCmd(ManipulatorConstants.kHoldVoltage)));
-                                                                
-
-                m_driver.a().onTrue(m_climber.setPositionCommand(ClimberConstants.kClimbDown));
-
-                m_operator.leftTrigger().or(m_operator.rightTrigger()).whileTrue(new ReefAlign(m_drivetrain,m_driver::getLeftY,m_driver::getLeftX, ()->
-                        m_operator.rightTrigger().getAsBoolean(),()->m_operator.leftTrigger().getAsBoolean()));
-
-                m_driver.leftTrigger().onTrue(m_shoulder.setPositionCommand(ShoulderConstants.kTroughtBump))
-                                .onFalse(m_shoulder.setPositionCommand(ShoulderConstants.kTrough));
-
-                m_driver.rightTrigger()
-                                .onTrue(new ConditionalCommand(
-                                                m_manipulator.setVoltageCmd(ManipulatorConstants.kScoreVoltageBump),
-                                                m_manipulator.setVoltageCmd(ManipulatorConstants.kScoreVoltage),
-                                                m_driver.leftTrigger()::getAsBoolean))
-                                .onFalse(m_manipulator.stopCmd());
-
-                m_driver.leftBumper().onTrue(m_manipulator.setVoltageCmd(ManipulatorConstants.kIntakeVoltage)
-                                .alongWith(m_shoulder.setPositionCommand(ShoulderConstants.kFloorIntake))).onFalse(
-                                                m_shoulder.setPositionCommand(ShoulderConstants.kTrough)
-                                                                .alongWith(m_manipulator.setVoltageCmd(
-                                                                                ManipulatorConstants.kHoldVoltage)));
-
-                m_driver.rightBumper().onTrue(m_manipulator.setVoltageCmd(ManipulatorConstants.kIntakeVoltage)
-                                .alongWith(m_shoulder.setPositionCommand(ShoulderConstants.kLoadingStation))).onFalse(
-                                                m_shoulder.setPositionCommand(ShoulderConstants.kTrough)
-                                                                .alongWith(m_manipulator.setVoltageCmd(
-                                                                                ManipulatorConstants.kHoldVoltage)));
-
-                m_driver.back()
-                            .onTrue(m_shoulder.setPositionCommand(ShoulderConstants.kClimbStart)
-                                            .alongWith(m_climber.setPositionCommand(ClimberConstants.kPrepClimb))
-                                            .alongWith(new InstantCommand(() -> readyToClimb = true))
-                                            .alongWith(new InstantCommand(() -> isArmOut = false)));
-                m_driver.start()
-                            .onTrue(new ConditionalCommand(
-                                            m_climber.setPositionCommand(ClimberConstants.kClimb)
-                                                            .andThen(new WaitUntilCommand(m_climber::finishedMove))
-                                                            .andThen(m_climber.setVoltage(-1.25)),
-                                                            new WaitCommand(0.0), () -> readyToClimb));
-                m_operator.rightBumper()
-                            .whileTrue(m_elevator.setPositionCommand(24.0));
+                m_driver.rightTrigger().onTrue(m_smartShoot.smartShoot())
+                                         .onFalse(new InstantCommand(()-> m_manipulatior.stop()));
+                m_driver.rightTrigger().and().rightBumper()
+                                        .onTrue(new InstantCommand(()-> m_manipulatior.setVoltage(ManipulatorConstants.kShootVoltage)))
+                                        .onFalse(new InstantCommand(()-> m_manipulatior.stop()));
                 
-                m_operator.leftBumper()
-                            .onTrue(m_elevator.setPositionCommand(0.0));
-                
-                m_operator.povUp()
-                            .onTrue(m.elevator.poseAdjust(5.0));
-                m_operator.povDown()
-                            .onTrue(m.elevator.poseAdjust(-5.0));
+                m_operator.leftTrigger().onTrue(new InstantCommand(()-> m_elevator.setPosition(1)));
+                m_operator.rightTrigger().onTrue(new InstantCommand(()-> m_shoulder.setPosition(1)));
 
+                m_operator.a().onTrue(m_climber.setPositionCmd(ClimberConstants.kClimbHeight));
+
+                m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
+                m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
+
+                m_operator.povLeft().onTrue(new InstantCommand(()-> m_turrent.AngleAdjust(5)));
+                m_operator.povRight().onTrue(new InstantCommand(()-> m_turrent.AngleAdjust(-5)));
         }
 
         public Command getAutonomousCommand() {

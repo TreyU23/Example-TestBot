@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
-    public final static TalonFX m_rightMotor = new TalonFX(9, "*");
-    public final static TalonFX m_leftMotor = new TalonFX(10, "*");
+    public final static TalonFX m_rightMotor = new TalonFX(11, "*");
+    public final static TalonFX m_leftMotor = new TalonFX(12, "*");
     public double m_setPoint = getPosition();
     private SoftwareLimitSwitchConfigs m_limits;
 

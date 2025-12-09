@@ -2,7 +2,7 @@ package frc.robot.constants;
 
 public class ClimberConstants {
 
-    public static final int kPort = 12;
+    public static final int kPort = 10;
 
     public static final double kStatorLimit = 58.0;
     public static final double kSupplyLimit = 58.0;
