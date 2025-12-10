@@ -48,11 +48,11 @@ public class DangerZone extends SubsystemBase {
 
     public DangerZone (
         
-    public void manage(double input, subsystem) {
+    public Command manage(double input, subsystem) {
         if (subsystem.equals(Shoulder)) {
             if (Math.abs(input) <= ShoulderConstants.kDanger 
                 or Math.abs(input) >= ShoulderConstants.kDangerLow) {
-                    m_climber.setPosition(ClimberConstants.kSafeHeight)
+                    return m_climber.setPosition(ClimberConstants.kSafeHeight)
                         .alongWith(() -> {
                     try {
                         wait(waitCalc(input, m_climber));
@@ -63,12 +63,12 @@ public class DangerZone extends SubsystemBase {
                     });
 
             } else {//if in safe spot dirrect input.
-                m_shoulder.setPosition(input);
+                return m_shoulder.setPosition(input);
             };
 
         } else if (subsystem.equals(Climber)) {
             if (Math.abs(input) <= ClimberConstants.kDanger) {
-                    m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
+                    return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
                         .alongWith(() -> {
                     try {
                         wait(waitCalc(input, m_climber));
@@ -79,17 +79,17 @@ public class DangerZone extends SubsystemBase {
                     });
 
             } else {//if in safe spot dirrect input.
-                m_climber.setPosition(input);
+                return m_climber.setPosition(input);
             };
 
         } else if (subsystem.equals(Manipulator)){
-            m_manipulatior.setVoltage(input);
+            return m_manipulatior.setVoltage(input);
 
         } else if (subsystem.equals(Elevator)){
-            m_elevator.setPosition(input);
+            return m_elevator.setPosition(input);
 
         } else if (subsystem.equals(turrent)){
-            m_smartShoot.smartShoot();
+            return m_smartShoot.smartShoot();
         }
     });
 }
