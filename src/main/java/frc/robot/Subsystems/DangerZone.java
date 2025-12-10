@@ -73,7 +73,7 @@ public class DangerZone extends SubsystemBase {
     public Command manage(double input,SubsystemID subsystem) {
         if (subsystem == SubsystemID.Shoulder) {
             if (Math.abs(input) <= ShoulderConstants.kDanger 
-                or Math.abs(input) >= ShoulderConstants.kDangerLow) {
+                || Math.abs(input) >= ShoulderConstants.kDangerLow) {
                     return m_climber.setPosition(ClimberConstants.kSafeHeight)
                         .alongWith(() -> {
                             new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))}
