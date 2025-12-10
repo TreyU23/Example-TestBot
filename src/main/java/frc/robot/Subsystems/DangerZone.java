@@ -48,7 +48,7 @@ public class DangerZone extends SubsystemBase {
 
     public DangerZone (
         
-    public Command if(double input, subsystem) {
+    public void manage(double input, subsystem) {
         if (subsystem.equals(Shoulder)) {
             if (Math.abs(input) <= ShoulderConstants.kDanger 
                 or Math.abs(input) >= ShoulderConstants.kDangerLow) {
