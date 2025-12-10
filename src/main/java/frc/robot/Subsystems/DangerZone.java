@@ -20,45 +20,64 @@ public class DangerZone extends SubsystemBase {
     private final Turrent m_turrent;
     private final SmartShootByPose m_smartShoot;
 
-    private final double getPostiion(subsystem) {
-        if (subsystem.equals(Shoulder)) {
+    public DangerZone(Climber climber, Shoulder shoulder, Manipulator manipulator,
+                  Elevator elevator, Turrent turrent, SmartShootByPose smartShoot) {
+        m_climber = climber;
+        m_shoulder = shoulder;
+        m_manipulator = manipulator;
+        m_elevator = elevator;
+        m_turrent = turrent;
+        m_smartShoot = smartShoot;
+    }
+
+    private emum SubsystemID {
+        Shoulder,
+        Climber,
+        Manipulator,
+        Elevator,
+        Turrent
+    }
+
+    private final double getPostiion(SubsystemID subsystem) {
+        if (subsystem == SubsystemID.Shoudler) {
             return m_shoulder.getPosition();
-        } else if (subsystem.equals(Climber)) {
+        } else if (subsystem == SubsystemID.Climber) {
             return m_climber.getPosition();
-        } else if (subsystem.equals(Elevator)){
+        } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.getPosition();
+        } else if (subsystem == SubsystemID.Turrent) {
+            return m_turrent.getPosition();
         }
     }
 
-    private final double getVelocity(subsystem) {
-        if (subsystem.equals(Shoulder)) {
+    private final double getVelocity(SubsystemID subsystem) {
+        if (subsystem == SubsystemID.Shoudlder) {
             return m_shoulder.getVelocity();
-        } else if (subsystem.equals(Climber)) {
+        } else if (subsystem == SubsystemID.Climber) {
             return m_climber.getVelocity();
-        } else if (subsystem.equals(Elevator)){
+        } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.getVelocity();
+        } else if (subsystem == SubsystemID.Turrent) {
+            return m_turrent.getVelocity();
+        } else if (subsystem == SubsystemID.Manipulator) {
+            return m_manipulator.getVelocity();
         }
     }
 
-    private long waitCalc(double targetPosition, subsystem) {
+    private long waitCalc(double targetPosition,SubsystemID subsystem) {
         double distance = Math.abs(targetPosition - getPosition(subsystem));
-        double time = distance / getVelocity();
+        double time = distance / getVelocity(subsystem);
         return (long) ((time*1.10) * 1000);
     }
-
-    public DangerZone (
         
-    public Command manage(double input, subsystem) {
-        if (subsystem.equals(Shoulder)) {
+    public Command manage(double input,SubsystemID subsystem) {
+        if (subsystem == SubsystemID.Shoulder) {
             if (Math.abs(input) <= ShoulderConstants.kDanger 
                 or Math.abs(input) >= ShoulderConstants.kDangerLow) {
                     return m_climber.setPosition(ClimberConstants.kSafeHeight)
                         .alongWith(() -> {
-                    try {
-                        wait(waitCalc(input, m_climber));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }}).alongWith(() -> {
+                            new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))}
+                    .andThen(() -> {
                         m_shoulder.setPosition(input);
                     });
 
@@ -66,15 +85,12 @@ public class DangerZone extends SubsystemBase {
                 return m_shoulder.setPosition(input);
             };
 
-        } else if (subsystem.equals(Climber)) {
+        } else if (subsystem == SubsystemID.Climber) {
             if (Math.abs(input) <= ClimberConstants.kDanger) {
                     return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
                         .alongWith(() -> {
-                    try {
-                        wait(waitCalc(input, m_climber));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }}).alongWith(() -> {
+                            new WaitCommand(waitCalc(ShoulderConstants.kSafeHeight, Shoulder)))}
+                    .andThen(() -> {
                         m_climber.setPosition(input);
                     });
 
@@ -82,15 +98,14 @@ public class DangerZone extends SubsystemBase {
                 return m_climber.setPosition(input);
             };
 
-        } else if (subsystem.equals(Manipulator)){
-            return m_manipulatior.setVoltage(input);
+        } else if (subsystem == SubsystemID.Manipulator){
+            return m_manipulator.setVoltage(input);
 
-        } else if (subsystem.equals(Elevator)){
+        } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.setPosition(input);
 
-        } else if (subsystem.equals(turrent)){
+        } else if (subsystem == SubsystemID.turrent){
             return m_smartShoot.smartShoot();
         }
-    });
+    };
 }
-
