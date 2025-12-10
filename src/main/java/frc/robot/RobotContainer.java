@@ -61,17 +61,17 @@ public class RobotContainer {
         
 
         private void ConfigureBindings() {
-                m_driver.leftTrigger().whileTrue(m_SSM.if(ManipulatorConstants.kIntakeVoltage, Manipulator));
+                m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, Manipulator));
                 m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot());
 
                 m_driver.rightTrigger().and().rightBumper()
-                                        .whileTrue(m_SSM.if(ManipulatorConstants.kShootVoltage, Manipulator));
+                                        .whileTrue(m_SSM.manage(ManipulatorConstants.kShootVoltage, Manipulator));
                 
-                m_operator.leftTrigger().whileTrue(m_SSM.if(1, Elevator));
-                m_operator.rightTrigger().whileTrue(m_SSM.if(1, Shoulder))
-                                                .onFalse(m_SSM.if(ShoulderConstants.kTrough, Shoulder));
+                m_operator.leftTrigger().whileTrue(m_SSM.manage(1, Elevator));
+                m_operator.rightTrigger().whileTrue(m_SSM.manage(1, Shoulder))
+                                                .onFalse(m_SSM.manage(ShoulderConstants.kTrough, Shoulder));
 
-                m_operator.a().whileTrue(m_SSM.if(ClimberConstants.kClimb, Climber));
+                m_operator.a().whileTrue(m_SSM.manage(ClimberConstants.kClimb, Climber));
 
                 m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
                 m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
