@@ -34,9 +34,12 @@ import frc.robot.subsystems.DangerZone;
 public class RobotContainer {
         private final CommandXboxController m_driver = new CommandXboxController(DriverConstants.kPort);
         private final CommandXboxController m_operator = new CommandXboxController(DriverConstants.kTrey);
-        private final DangerZone m_SSM = new dangerZone();
-        private final Manipulator m_manipulator = new manipulator();
+        private final DangerZone m_SSM = new DangerZone(m_climber, m_shoulder, m_manipulator, m_elevator, m_turrent, m_smartShoot);
+        private final Manipulator m_manipulator = new Manipulator();
         private final Turrent m_turrent = new Turrent();
+        private final Shoulder m_shoulder = new Shoulder();
+        private final Elevator m_elevator = new Elevator();
+        private final Climber m_climber = new Climber();
         private final SmartShootByPose m_smartShoot = new SmartShootByPose(m_turrent, m_manipulator);
         public final CommandSwerveDrivetrain m_drivetrain;
 
@@ -61,17 +64,17 @@ public class RobotContainer {
         
 
         private void ConfigureBindings() {
-                m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, Manipulator));
+                m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, SubsystemID.Manipulator));
                 m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot());
 
                 m_driver.rightTrigger().and().rightBumper()
-                                        .whileTrue(m_SSM.manage(ManipulatorConstants.kShootVoltage, Manipulator));
+                                        .whileTrue(m_SSM.manage(ManipulatorConstants.kShootVoltage, SubsystemID.Manipulator));
                 
-                m_operator.leftTrigger().whileTrue(m_SSM.manage(1, Elevator));
-                m_operator.rightTrigger().whileTrue(m_SSM.manage(1, Shoulder))
-                                                .onFalse(m_SSM.manage(ShoulderConstants.kTrough, Shoulder));
+                m_operator.leftTrigger().whileTrue(m_SSM.manage(1, SubsystemID.Elevator));
+                m_operator.rightTrigger().whileTrue(m_SSM.manage(1, SubsystemID.Shoulder))
+                                                .onFalse(m_SSM.manage(ShoulderConstants.kTrough, SubsystemID.Shoulder));
 
-                m_operator.a().whileTrue(m_SSM.manage(ClimberConstants.kClimb, Climber));
+                m_operator.a().whileTrue(m_SSM.manage(ClimberConstants.kClimb, SubsystemID.Climber));
 
                 m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
                 m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
