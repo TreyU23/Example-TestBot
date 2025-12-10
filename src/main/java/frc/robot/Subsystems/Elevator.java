@@ -37,7 +37,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void poseAdjust(double adjust) {
-        m_SSM.if((getPosition() + adjust), Elevator);
+        m_SSM.manage((getPosition() + adjust), Elevator);
     }
 
     @SuppressWarnings("rawtypes")
