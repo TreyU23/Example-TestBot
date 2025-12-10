@@ -11,12 +11,15 @@ import com.ctre.phoenix6.configs.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.subsystem.DangerZone;
 
 public class Elevator extends SubsystemBase {
-    public final static TalonFX m_rightMotor = new TalonFX(11, "*");
-    public final static TalonFX m_leftMotor = new TalonFX(12, "*");
+    public final static TalonFX m_rightMotor = new TalonFX(ElevatorConstants.kRightID, "*");
+    public final static TalonFX m_leftMotor = new TalonFX(ElevatorConstants.kLeftID, "*");
     public double m_setPoint = getPosition();
     private SoftwareLimitSwitchConfigs m_limits;
+
+    private final DangerZone m_SSM;
 
     public Elevator() {
         configureLeftRightMotors();
@@ -34,7 +37,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void poseAdjust(double adjust) {
-        setPosition(getPosition() + adjust);
+        m_SSM.if((getPosition() + adjust), Elevator);
     }
 
     @SuppressWarnings("rawtypes")

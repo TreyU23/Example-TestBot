@@ -2,6 +2,8 @@ package frc.robot.constants;
 
 public class ElevatorConstants {
 
+  public static final double kRightID = 11;
+  public static final double kLeftID = 12;
   // We are using Motion Magic position control with voltage countrol output type,
   // so the PID parameters are in volts
   public static final double kPElevator = 3.0; // Output per unit of error in position (volts/rotation)

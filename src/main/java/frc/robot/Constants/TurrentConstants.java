@@ -1,7 +1,7 @@
 package frc.robot.constants;
 
 public class TurrentConstants {
-    public static final double kPort = 14;
+    public static final double kPort = 15;
     public static final double kSupplyLimit = 40.0;
     public static final double kStatorLimit = 80.0;
     public static final double kVelocity = 1.0;

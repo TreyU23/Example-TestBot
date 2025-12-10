@@ -16,20 +16,15 @@ import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.ShoulderConstants;
 
 public class Shoulder extends SubsystemBase {
 
     private final TalonFX m_rightMotor = new TalonFX(ShoulderConstants.kRightID, "*");
     private final TalonFX m_leftMotor = new TalonFX(ShoulderConstants.kLeftID, "*");
-    private final Climber m_climber = new Climber();
 
     private double m_setPoint = getPosition();
     private CANcoder m_cancoder = new CANcoder(25, "*");
-    private double dangerZone = 50;
-
-    private double climberPose = m_climber.getPosition();
 
     public Shoulder() {
         configureCancoder();
@@ -42,28 +37,12 @@ public class Shoulder extends SubsystemBase {
         return (m_rightMotor.getPosition().getValueAsDouble());
     }
 
-    public long waitCalc(double targetPosition) {
-        double distance = Math.abs(targetPosition - m_climber.getPosition());
-        double time = distance / ClimberConstants.kVelocity;
-        return (long) ((time*1.10) * 1000);
-    }
-
     public void setPosition(double position) {
         m_setPoint = position;
         if (m_setPoint > ShoulderConstants.kUpLimit) {
             m_setPoint = ShoulderConstants.kUpLimit;
         } else if (m_setPoint < ShoulderConstants.kLowerLimit) {
             m_setPoint = ShoulderConstants.kLowerLimit;
-        }
-
-        if (climberPose == dangerZone) {
-            m_climber.setPosition(ClimberConstants.kSafeHeight);
-            try {
-                wait(waitCalc(m_setPoint));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            m_rightMotor.setControl(new MotionMagicVoltage(m_setPoint));
         }
         m_rightMotor.setControl(new MotionMagicVoltage(m_setPoint));
     }
@@ -78,10 +57,6 @@ public class Shoulder extends SubsystemBase {
 
     public double getCurrentRight() {
         return (m_rightMotor.getSupplyCurrent().getValueAsDouble());
-    }
-
-    public Command climb(){
-        return runOnce(()->m_rightMotor.setVoltage(-2.0));
     }
 
     public Command setPositionCommand(double position) {

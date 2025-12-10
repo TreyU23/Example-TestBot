@@ -3,11 +3,12 @@ package.frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.TurrentConstants;
 import com.ctre.phoenix6.hardware.TalonFX;
+import frc.robot.subsystem.DangerZone;
 
 public class Turrent extends SubsystemBase {
     private TalonFX m_motor = new TalonFX(TurrentConstants.kPort, "*");
     private double m_setPoint = getPosition();
-    private double m_smartPose = 0.0;
+    private DangerZone m_SSM;
 
     public Turrent() {
         motorConfigs();
@@ -23,16 +24,11 @@ public class Turrent extends SubsystemBase {
     }
 
     public void poseAdjust(double adjust) {
-        setPosition(getPosition() + adjust);
+        m_SSM.if((getPosition() + adjust), Turrent);
     }
 
     public double getSmartPose() {
         return m_smartPose;
-    }
-
-    public void setSmartPose(double pose) {
-        m_smartPose = pose;
-        m_motor.setControl(new MotionMagicVoltage(m_smartPose));
     }
 
     private void motorConfigs() {
