@@ -30,7 +30,7 @@ public class DangerZone extends SubsystemBase {
         m_smartShoot = smartShoot;
     }
 
-    private emum SubsystemID {
+    public emum SubsystemID {
         Shoulder,
         Climber,
         Manipulator,
