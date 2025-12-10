@@ -24,7 +24,7 @@ public class Turrent extends SubsystemBase {
     }
 
     public void poseAdjust(double adjust) {
-        m_SSM.manage((getPosition() + adjust), Turrent);
+        m_SSM.manage((getPosition() + adjust), SubsystemID.Turrent);
     }
 
     public double getSmartPose() {
