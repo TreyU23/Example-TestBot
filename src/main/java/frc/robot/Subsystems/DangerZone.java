@@ -64,10 +64,10 @@ public class DangerZone extends SubsystemBase {
         }
     }
 
-    private long waitCalc(double targetPosition,SubsystemID subsystem) {
+    private double waitCalc(double targetPosition,SubsystemID subsystem) {
         double distance = Math.abs(targetPosition - getPosition(subsystem));
         double time = distance / getVelocity(subsystem);
-        return (long) ((time*1.10) * 1000);
+        return (time*0.1);
     }
         
     public Command manage(double input,SubsystemID subsystem) {
