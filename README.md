@@ -1,8 +1,10 @@
 |Subsystem|CanID|MotorName|
 |---------|-----|---------|
-|Shoulder  |null|m_leftMotor|
-|Shoulder|null|m_rightMotor|
-|Manipulator|null|m_motor|
-|Elevator|null|m_leftMotor|
-|Elevator|null|m_rightMotor|
-|Climber|null|m_motor|
+|Shoulder|14|m_leftMotor|
+|Shoulder|15|m_rightMotor|
+|Manipulator|13|m_motor|
+|Elevator|12|m_leftMotor|
+|Elevator|11|m_rightMotor|
+|Climber|10|m_motor|
+|Turrent|9|m_motor|
+|Drive|1-8|m_motor|
