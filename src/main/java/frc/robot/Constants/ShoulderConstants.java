@@ -2,7 +2,7 @@ package frc.robot.constants;
 
 public class ShoulderConstants {
 
-    public static final int kRightID = 13;
+    public static final int kRightID = 15;
     public static final int kLeftID = 14;
     public static final double kSupplyLimit = 40.0;
     public static final double kStatorLimit = 80.0;

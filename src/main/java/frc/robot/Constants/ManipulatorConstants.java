@@ -1,7 +1,7 @@
 package frc.robot.constants;
 
 public class ManipulatorConstants {
-    public static final int kID = 11;
+    public static final int kID = 13;
     public static final double kStatorLimit = 120.0;
     public static final double kSupplyLimit = 40.0;
     public static final double kScoreVoltage = 2.46;
