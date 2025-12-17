@@ -32,8 +32,12 @@ import frc.robot.Utilties.SmartShootByPose;
 import frc.robot.subsystems.DangerZone;
 
 public class RobotContainer {
+
+                //Controllers (driver and operator)
         private final CommandXboxController m_driver = new CommandXboxController(DriverConstants.kPort);
         private final CommandXboxController m_operator = new CommandXboxController(DriverConstants.kTrey);
+
+                //Importing Subsystems and Unilities.
         private final DangerZone m_SSM = new DangerZone(m_climber, m_shoulder, m_manipulator, m_elevator, m_turrent, m_smartShoot);
         private final Manipulator m_manipulator = new Manipulator();
         private final Turrent m_turrent = new Turrent();
@@ -44,6 +48,7 @@ public class RobotContainer {
         public final CommandSwerveDrivetrain m_drivetrain;
 
         public RobotContainer() {
+                        //Robot Container Constructor
                 m_drivetrain = TunerConstants.createDrivetrain();
                 configureNamedCommands();
                 autoChooser = AutoBuilder.buildAutoChooser("Center");
@@ -55,6 +60,7 @@ public class RobotContainer {
         private final SendableChooser<Command> autoChooser;
 
         private void configureDefaultCommands() {
+                //Sets the driver controller to control the drivetrain by default.
             m_drivetrain.setDefaultCommand(DriveCommands.fieldOrientedDrive(m_drivetrain,
                                                 () -> m_driver.getLeftY(),
                                                 () -> m_driver.getLeftX(),
@@ -64,26 +70,38 @@ public class RobotContainer {
         
 
         private void ConfigureBindings() {
-                m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, SubsystemID.Manipulator));
-                m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot());
 
+                        //Shoot and Intake Commands.
+                m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, SubsystemID.Manipulator));
+                                        //LeftTrigger = Intake.
+                m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot());
+                                        //RightTrigger = ShootByPose. (Turrent)
                 m_driver.rightTrigger().and().rightBumper()
                                         .whileTrue(m_SSM.manage(ManipulatorConstants.kShootVoltage, SubsystemID.Manipulator));
+                                        //RightBumper + RightTrigger = Shoot. (Manipulator)
                 
+
+                        //Elevator and Shoulder Controls.
                 m_operator.leftTrigger().whileTrue(m_SSM.manage(1, SubsystemID.Elevator));
+                                        //LeftTrigger = Elevator Pose 1.
                 m_operator.rightTrigger().whileTrue(m_SSM.manage(1, SubsystemID.Shoulder))
                                                 .onFalse(m_SSM.manage(ShoulderConstants.kTrough, SubsystemID.Shoulder));
+                                        //RightTrigger = Shoulder Pose 1, else to Trough.
 
+                                        //Climb Command on Operator A.
                 m_operator.a().whileTrue(m_SSM.manage(ClimberConstants.kClimb, SubsystemID.Climber));
 
+
+                        //Manual Adjustments for Elevator and Turrent.
                 m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
-                m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
+                m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(-5)));
 
                 m_operator.povLeft().onTrue(new InstantCommand(()-> m_turrent.AngleAdjust(5)));
                 m_operator.povRight().onTrue(new InstantCommand(()-> m_turrent.AngleAdjust(-5)));
         }
 
         public Command getAutonomousCommand() {
+                //Selects the auto command to run.
             return autoChooser.getSelected();
         }
 }

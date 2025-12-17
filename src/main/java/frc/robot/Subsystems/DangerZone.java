@@ -13,6 +13,8 @@ import frc.robot.subsystems.Turrent;
 import frc.robot.Utilties.SmartShootByPose;
 
 public class DangerZone extends SubsystemBase {
+
+        //Subsystem references
     private final Climber m_climber;
     private final Shoulder m_shoulder;
     private final Manipulator m_manipulator;
@@ -20,6 +22,8 @@ public class DangerZone extends SubsystemBase {
     private final Turrent m_turrent;
     private final SmartShootByPose m_smartShoot;
 
+
+        //Declare subsystems in constructor.
     public DangerZone(Climber climber, Shoulder shoulder, Manipulator manipulator,
                   Elevator elevator, Turrent turrent, SmartShootByPose smartShoot) {
         m_climber = climber;
@@ -30,6 +34,8 @@ public class DangerZone extends SubsystemBase {
         m_smartShoot = smartShoot;
     }
 
+
+        //Subsystem identifiers.
     public emum SubsystemID {
         Shoulder,
         Climber,
@@ -38,6 +44,8 @@ public class DangerZone extends SubsystemBase {
         Turrent
     }
 
+
+        //Helper methods to get position and velocity of subsystems.
     private final double getPostiion(SubsystemID subsystem) {
         if (subsystem == SubsystemID.Shoudler) {
             return m_shoulder.getPosition();
@@ -64,12 +72,16 @@ public class DangerZone extends SubsystemBase {
         }
     }
 
+
+        //Calculates needed time to wait till at the safe pose.
     private double waitCalc(double targetPosition, SubsystemID subsystem) {
         double distance = Math.abs(targetPosition - getPosition(subsystem));
         double time = distance / getVelocity(subsystem);
         return (time*0.1);
     }
-        
+       
+    
+        //Main method to manage dangerous movements.
     public Command manage(double input,SubsystemID subsystem) {
         if (subsystem == SubsystemID.Shoulder) {
             if (Math.abs(input) <= ShoulderConstants.kDanger 
@@ -94,7 +106,7 @@ public class DangerZone extends SubsystemBase {
                         m_climber.setPosition(input);
                     );
 
-            } else {//if in safe spot dirrect input.
+            } else {
                 return m_climber.setPosition(input);
             };
 

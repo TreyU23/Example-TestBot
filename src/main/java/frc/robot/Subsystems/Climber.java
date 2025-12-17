@@ -12,7 +12,7 @@ import frc.robot.constants.ClimberConstants;
 
 public class Climber extends SubsystemBase{
 
-    private TalonFX m_motor = new TalonFX(ClimberConstants.kPort, "*");
+    private TalonFX m_motor = new TalonFX(ClimberConstants.kPort, "*");            
     private double m_setPoint = getPosition();
 
     public Climber() {
