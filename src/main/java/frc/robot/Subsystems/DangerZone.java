@@ -64,7 +64,7 @@ public class DangerZone extends SubsystemBase {
         }
     }
 
-    private double waitCalc(double targetPosition,SubsystemID subsystem) {
+    private double waitCalc(double targetPosition, SubsystemID subsystem) {
         double distance = Math.abs(targetPosition - getPosition(subsystem));
         double time = distance / getVelocity(subsystem);
         return (time*0.1);
@@ -75,11 +75,11 @@ public class DangerZone extends SubsystemBase {
             if (Math.abs(input) <= ShoulderConstants.kDanger 
                 || Math.abs(input) >= ShoulderConstants.kDangerLow) {
                     return m_climber.setPosition(ClimberConstants.kSafeHeight)
-                        .alongWith(() -> {
-                            new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))}
-                    .andThen(() -> {
+                        .alongWith(() -> 
+                            new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))
+                    .andThen(() -> 
                         m_shoulder.setPosition(input);
-                    });
+                    );
 
             } else {//if in safe spot dirrect input.
                 return m_shoulder.setPosition(input);
@@ -88,11 +88,11 @@ public class DangerZone extends SubsystemBase {
         } else if (subsystem == SubsystemID.Climber) {
             if (Math.abs(input) <= ClimberConstants.kDanger) {
                     return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
-                        .alongWith(() -> {
-                            new WaitCommand(waitCalc(ShoulderConstants.kSafeHeight, Shoulder)))}
-                    .andThen(() -> {
+                        .alongWith(() -> 
+                            new WaitCommand(waitCalc(ShoulderConstants.kSafeHeight, Shoulder)))
+                    .andThen(() -> 
                         m_climber.setPosition(input);
-                    });
+                    );
 
             } else {//if in safe spot dirrect input.
                 return m_climber.setPosition(input);

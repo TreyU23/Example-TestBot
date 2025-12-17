@@ -51,13 +51,13 @@ public class SmartShootByPose {
     private waitCalc(double targetAngle) {
         double distance = Math.abs(targetAngle - currentRotation);
         double time = distance / Turrent.kVelocity;
-        return (long) ((time*1.10) * 1000);
-        SmartDashboard.putNumber("Smart Shoot Wait Time", (long) ((time*1.10) * 1000));
+        return ((time*1.10) * 1000);
+        SmartDashboard.putNumber("Smart Shoot Wait Time", ((time*1.10) * 1000));
     }
 
     public Command smartShoot() {
         return runOnce(() -> m_turrent.setAngle(AngleAdjust(currentRotation))
-            .alongWith(() -> wait(waitCalc(AngleAdjust(currentRotation))
-            .alongWith(() -> m_manipulatior.setVoltage(ManipulatorConstants.kShootVoltage)))));
+            .andThen(() -> new WaitCommand(waitCalc(AngleAdjust(currentRotation)))
+            .andThen(() -> m_manipulatior.setVoltage(ManipulatorConstants.kShootVoltage))));
     }
 }
