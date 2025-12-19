@@ -27,7 +27,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shoulder;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Turrent;
+import frc.robot.subsystems.Turret;
 import frc.robot.Utilties.SmartShootByPose;
 import frc.robot.subsystems.DangerZone;
 
@@ -38,13 +38,13 @@ public class RobotContainer {
         private final CommandXboxController m_operator = new CommandXboxController(DriverConstants.kTrey);
 
                 //Importing Subsystems and Unilities.
-        private final DangerZone m_SSM = new DangerZone(m_climber, m_shoulder, m_manipulator, m_elevator, m_turrent, m_smartShoot);
+        private final DangerZone m_SSM = new DangerZone(m_climber, m_shoulder, m_manipulator, m_elevator, m_turret, m_smartShoot);
         private final Manipulator m_manipulator = new Manipulator();
-        private final Turrent m_turrent = new Turrent();
+        private final Turret m_turret = new Turret();
         private final Shoulder m_shoulder = new Shoulder();
         private final Elevator m_elevator = new Elevator();
         private final Climber m_climber = new Climber();
-        private final SmartShootByPose m_smartShoot = new SmartShootByPose(m_turrent, m_manipulator);
+        private final SmartShootByPose m_smartShoot = new SmartShootByPose(m_turret, m_manipulator);
         public final CommandSwerveDrivetrain m_drivetrain;
 
         public RobotContainer() {
@@ -75,7 +75,7 @@ public class RobotContainer {
                 m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, SubsystemID.Manipulator));
                                         //LeftTrigger = Intake.
                 m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot());
-                                        //RightTrigger = ShootByPose. (Turrent)
+                                        //RightTrigger = ShootByPose. (Turret)
                 m_driver.rightTrigger().and().rightBumper()
                                         .whileTrue(m_SSM.manage(ManipulatorConstants.kShootVoltage, SubsystemID.Manipulator));
                                         //RightBumper + RightTrigger = Shoot. (Manipulator)
@@ -92,12 +92,12 @@ public class RobotContainer {
                 m_operator.a().whileTrue(m_SSM.manage(ClimberConstants.kClimb, SubsystemID.Climber));
 
 
-                        //Manual Adjustments for Elevator and Turrent.
+                        //Manual Adjustments for Elevator and Turret.
                 m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
                 m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(-5)));
 
-                m_operator.povLeft().onTrue(new InstantCommand(()-> m_turrent.AngleAdjust(5)));
-                m_operator.povRight().onTrue(new InstantCommand(()-> m_turrent.AngleAdjust(-5)));
+                m_operator.povLeft().onTrue(new InstantCommand(()-> m_turret.AngleAdjust(5)));
+                m_operator.povRight().onTrue(new InstantCommand(()-> m_turret.AngleAdjust(-5)));
         }
 
         public Command getAutonomousCommand() {

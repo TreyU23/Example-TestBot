@@ -9,28 +9,19 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shoulder;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Turrent;
+import frc.robot.subsystems.Turret;
 import frc.robot.Utilties.SmartShootByPose;
 
 public class DangerZone extends SubsystemBase {
 
-        //Subsystem references
-    private final Climber m_climber;
-    private final Shoulder m_shoulder;
-    private final Manipulator m_manipulator;
-    private final Elevator m_elevator;
-    private final Turrent m_turrent;
-    private final SmartShootByPose m_smartShoot;
-
-
         //Declare subsystems in constructor.
     public DangerZone(Climber climber, Shoulder shoulder, Manipulator manipulator,
-                  Elevator elevator, Turrent turrent, SmartShootByPose smartShoot) {
+                  Elevator elevator, Turret turret, SmartShootByPose smartShoot) {
         m_climber = climber;
         m_shoulder = shoulder;
         m_manipulator = manipulator;
         m_elevator = elevator;
-        m_turrent = turrent;
+        m_turret = turret;
         m_smartShoot = smartShoot;
     }
 
@@ -41,7 +32,7 @@ public class DangerZone extends SubsystemBase {
         Climber,
         Manipulator,
         Elevator,
-        Turrent
+        Turret
     }
 
 
@@ -53,8 +44,8 @@ public class DangerZone extends SubsystemBase {
             return m_climber.getPosition();
         } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.getPosition();
-        } else if (subsystem == SubsystemID.Turrent) {
-            return m_turrent.getPosition();
+        } else if (subsystem == SubsystemID.Turret) {
+            return m_turret.getPosition();
         }
     }
 
@@ -65,8 +56,8 @@ public class DangerZone extends SubsystemBase {
             return m_climber.getVelocity();
         } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.getVelocity();
-        } else if (subsystem == SubsystemID.Turrent) {
-            return m_turrent.getVelocity();
+        } else if (subsystem == SubsystemID.Turret) {
+            return m_turret.getVelocity();
         } else if (subsystem == SubsystemID.Manipulator) {
             return m_manipulator.getVelocity();
         }
@@ -82,10 +73,11 @@ public class DangerZone extends SubsystemBase {
        
     
         //Main method to manage dangerous movements.
-    public Command manage(double input,SubsystemID subsystem) {
+    public Command manage(double input, SubsystemID subsystem) {
         if (subsystem == SubsystemID.Shoulder) {
-            if (Math.abs(input) <= ShoulderConstants.kDanger 
-                || Math.abs(input) >= ShoulderConstants.kDangerLow) {
+            if ((Math.abs(input) <= ShoulderConstants.kDanger)
+                || (Math.abs(input) >= ShoulderConstants.kDangerLow)) 
+                && (getPostiion(Climber) <= ClimberConstants.kDanger) {
                     return m_climber.setPosition(ClimberConstants.kSafeHeight)
                         .alongWith(() -> 
                             new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))
@@ -98,7 +90,8 @@ public class DangerZone extends SubsystemBase {
             };
 
         } else if (subsystem == SubsystemID.Climber) {
-            if (Math.abs(input) <= ClimberConstants.kDanger) {
+            if (Math.abs(input) <= ClimberConstants.kDanger) 
+                && (getPostiion(Shoulder) <= ShoulderConstants.kDanger) {
                     return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
                         .alongWith(() -> 
                             new WaitCommand(waitCalc(ShoulderConstants.kSafeHeight, Shoulder)))
@@ -116,7 +109,7 @@ public class DangerZone extends SubsystemBase {
         } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.setPosition(input);
 
-        } else if (subsystem == SubsystemID.turrent){
+        } else if (subsystem == SubsystemID.turret){
             return m_smartShoot.smartShoot();
         }
     };

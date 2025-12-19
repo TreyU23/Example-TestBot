@@ -19,5 +19,4 @@ public class ClimberConstants {
 
     public static final double kSafeHeight = 0;
     public static final double kDanger = -20.0;
-    
 }

@@ -1,6 +1,6 @@
 package frc.robot.utlities;
 
-import frc.robot.subsystems.Turrent;
+import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class SmartShootByPose {
         //Creates the objects and values needed throught the subsystem.
-    private Turrent m_turrent;
+    private Turret m_turret;
     private Manipulator m_manipulator;
     private double currentRotation = 0.0;
     private double MAX_VALUE = 0.0;
@@ -23,9 +23,21 @@ public class SmartShootByPose {
         //Pose 2
     };
 
+    /* Another Way of setting the target rotations.
+            This will allow for you to declear the 
+                values anywhere in the program.
+    private Targets[] = new Rotation2d[5];
+        Targets[1] = (0.0);
+        Targets[2] = (0.0);
+        Targets[3] = (0.0);
+        Targets[4] = (0.0);
+        Targets[5] = (0.0);
+    */
+
+
     @Override
     public void periodic() {
-        currentRotation = m_turrent.getRotation();
+        currentRotation = m_turret.getRotation();
     }
 
         //Calculates the closest target rotation to the current rotation.
@@ -45,12 +57,12 @@ public class SmartShootByPose {
 
 
         //Declares the constructors for the SmartShootByPose subsystem.
-    public SmartShootByPose(Turrent turrent, Manipulator manipulator) {
-        m_turrent = turrent;
+    public SmartShootByPose(Turret turret, Manipulator manipulator) {
+        m_turret = turret;
         m_manipulator = manipulator;
     }
 
-        //Returns the adjusted angle for the turrent to shoot at.
+        //Returns the adjusted angle for the turret to shoot at.
     private double AngleAdjust(double currentAngle) {
         double AngleFromGoal = currentAngle - calculate(currentAngle);
         return (AngleFromGoal + currentAngle);
@@ -58,21 +70,21 @@ public class SmartShootByPose {
     }
 
 
-        //Calculates the time needed for the turrent to rotate to the target angle.
+        //Calculates the time needed for the turret to rotate to the target angle.
     private waitCalc(double targetAngle) {
         double distance = Math.abs(targetAngle - currentRotation);
-        double time = distance / Turrent.kVelocity;
+        double time = distance / Turret.kVelocity;
         return ((time*1.10) * 1000);
         SmartDashboard.putNumber("Smart Shoot Wait Time", ((time*1.10) * 1000));
     }
 
 
-        //Smart shoot command that rotates the turrent to the target angle and shoots.
+        //Smart shoot command that rotates the turret to the target angle and shoots.
     public Command smartShoot() {
-        return runOnce(() -> m_turrent.setAngle(AngleAdjust(currentRotation))
-                                //Sets the turrent to the adjusted angle.
+        return runOnce(() -> m_turret.setPosition(AngleAdjust(currentRotation))
+                                //Sets the turret to the adjusted angle.
             .andThen(() -> new WaitCommand(waitCalc(AngleAdjust(currentRotation)))
-                                //Waits for the turrent to reach the target angle.
+                                //Waits for the turret to reach the target angle.
             .andThen(() -> m_manipulatior.setVoltage(ManipulatorConstants.kShootVoltage))));
                                 //Sets the manipulator to shoot.
     }
