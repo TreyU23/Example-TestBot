@@ -77,7 +77,8 @@ public class DangerZone extends SubsystemBase {
         if (subsystem == SubsystemID.Shoulder) {
             if ((Math.abs(input) <= ShoulderConstants.kDanger)
                 || (Math.abs(input) >= ShoulderConstants.kDangerLow)) 
-                && (getPostiion(Climber) <= ClimberConstants.kDanger) {
+                && ((getPostiion(Climber) <= ClimberConstants.kDanger) 
+                || (getPostiion(Climber) >= ClimberConstants.kDangerLow)) {
                     return m_climber.setPosition(ClimberConstants.kSafeHeight)
                         .alongWith(() -> 
                             new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))
@@ -91,7 +92,8 @@ public class DangerZone extends SubsystemBase {
 
         } else if (subsystem == SubsystemID.Climber) {
             if (Math.abs(input) <= ClimberConstants.kDanger) 
-                && (getPostiion(Shoulder) <= ShoulderConstants.kDanger) {
+                && ((getPostiion(Shoulder) <= ShoulderConstants.kDanger)
+                || (getPostiion(Shoulder) >= ShoulderConstants.kDangerLow)) {
                     return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
                         .alongWith(() -> 
                             new WaitCommand(waitCalc(ShoulderConstants.kSafeHeight, Shoulder)))
