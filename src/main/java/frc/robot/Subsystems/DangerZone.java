@@ -130,11 +130,11 @@ public class DangerZone extends SubsystemBase {
             return m_smartShoot.smartShoot()
                 .alongWith(() -> new InstantCommand(State = Turret));
         }
-    };
-}
+    }
 
     @Override
     public void periodic() {
         SmartDashboard.putData("SSM State", State);
         SmartDashboard.putData("SSM Next State", nextState);
     }
+}
