@@ -83,19 +83,19 @@ public class DangerZone extends SubsystemBase {
                 && ((getPostiion(Climber) <= ClimberConstants.kDanger) 
                 || (getPostiion(Climber) >= ClimberConstants.kDangerLow)) {
                     return m_climber.setPosition(ClimberConstants.kSafeHeight)
-                        .alongWith(() -> State = Climber)
-                        .alongWith(() -> nextState = Shoulder)
+                        .alongWith(() -> new InstantCommand(State = Climber))
+                        .alongWith(() -> new InstantCommand(nextState = Shoulder))
                         .alongWith(() -> 
                             new WaitCommand(waitCalc(ClimberConstants.kSafeHeight, Climber)))
                     .andThen(() -> 
                         m_shoulder.setPosition(input)
-                    .alongWith(() -> State = Shoulder)
-                    .alongWith(() -> nextState = notInUse)
+                        .alongWith(() -> new InstantCommand(State = Shoulder))
+                        .alongWith(() -> new InstantCommand(nextState = notInUse))
                     );
 
             } else {//if in safe spot dirrect input.
                 return m_shoulder.setPosition(input)
-                    .alongWith(() -> State = Shoulder);
+                    .alongWith(() -> new InstantCommand(State = Shoulder));
             };
 
         } else if (subsystem == SubsystemID.Climber) {
@@ -103,38 +103,38 @@ public class DangerZone extends SubsystemBase {
                 && ((getPostiion(Shoulder) <= ShoulderConstants.kDanger)
                 || (getPostiion(Shoulder) >= ShoulderConstants.kDangerLow)) {
                     return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
-                        .alongWith(() -> State = Shoulder)
-                        .alongWith(() -> nextState = Climber)
+                        .alongWith(() -> new InstantCommand(State = Shoulder))
+                        .alongWith(() -> new InstantCommand(nextState = Climber))
                         .alongWith(() -> 
                             new WaitCommand(waitCalc(ShoulderConstants.kSafeHeight, Shoulder)))
                     .andThen(() -> 
                         m_climber.setPosition(input)
-                        .alongWith(() -> State = Climber);
-                        .alongWith(() -> nextState = notInUse)
+                        .alongWith(() -> new InstantCommand(State = Climber))
+                        .alongWith(() -> new InstantCommand(nextState = notInUse))
                     );
 
             } else {
                 return m_climber.setPosition(input)
-                    .alongWith(() -> State = Climber);
+                .alongWith(() -> new InstantCommand(State = Climber));
             };
 
         } else if (subsystem == SubsystemID.Manipulator){
             return m_manipulator.setVoltage(input)
-                .alongWith(() -> State = Manipulator);
+                .alongWith(() -> new InstantCommand(State = Manipulator));
 
         } else if (subsystem == SubsystemID.Elevator){
             return m_elevator.setPosition(input)
-                .alongWith(() -> State = Elevator);
+                .alongWith(() -> new InstantCommand(State = Elevator));
 
         } else if (subsystem == SubsystemID.turret){
             return m_smartShoot.smartShoot()
-                .alongWith(() -> State = Turret);
+                .alongWith(() -> new InstantCommand(State = Turret));
         }
     };
 }
 
     @Override
     public void periodic() {
-        Smartdashboard.putData("SSM State", State);
-        Smartdashboard.putData("SSM Next State", nextState);
+        SmartDashboard.putData("SSM State", State);
+        SmartDashboard.putData("SSM Next State", nextState);
     }
