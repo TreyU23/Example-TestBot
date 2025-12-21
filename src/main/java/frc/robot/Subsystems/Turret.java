@@ -31,6 +31,10 @@ public class Turret extends SubsystemBase {
         return m_smartPose;
     }
 
+    public void stop() {
+        m_motor.stopMotor();
+    }
+
     private void motorConfigs() {
         m_motor.getConfigurator().apply(new CurrentLimitsConfigs()
         .withStatorCurrentLimit(TurretConstants.kStatorLimit)

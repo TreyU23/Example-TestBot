@@ -38,7 +38,6 @@ public class DangerZone extends SubsystemBase {
     private var State = notInUse;
     private var nextState = notInUse;
 
-
         //Helper methods to get position and velocity of subsystems.
     private final double getPostiion(SubsystemID subsystem) {
         if (subsystem == SubsystemID.Shoudler) {
@@ -99,9 +98,10 @@ public class DangerZone extends SubsystemBase {
             };
 
         } else if (subsystem == SubsystemID.Climber) {
-            if (Math.abs(input) <= ClimberConstants.kDanger) 
+            if (((Math.abs(input) <= ClimberConstants.kDanger)
+                || (Math.abs(input) >= ClimberConstants.kDangerLow))
                 && ((getPostiion(Shoulder) <= ShoulderConstants.kDanger)
-                || (getPostiion(Shoulder) >= ShoulderConstants.kDangerLow)) {
+                || (getPostiion(Shoulder) >= ShoulderConstants.kDangerLow))) {
                     return m_shoulder.setPosition(ShoulderConstants.kSafeHeight)
                         .alongWith(() -> new InstantCommand(State = Shoulder))
                         .alongWith(() -> new InstantCommand(nextState = Climber))

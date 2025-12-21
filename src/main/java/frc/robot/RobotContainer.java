@@ -47,6 +47,8 @@ public class RobotContainer {
         private final SmartShootByPose m_smartShoot = new SmartShootByPose(m_turret, m_manipulator);
         public final CommandSwerveDrivetrain m_drivetrain;
 
+        private boolean isSSM = true;
+
         public RobotContainer() {
                         //Robot Container Constructor
                 m_drivetrain = TunerConstants.createDrivetrain();
@@ -65,6 +67,14 @@ public class RobotContainer {
                                                 () -> m_driver.getLeftY(),
                                                 () -> m_driver.getLeftX(),
                                                 () -> m_driver.getRightX()));
+        }
+
+        private void HardStop() {
+                m_manipulator.stop();
+                m_climber.stop();
+                m_turret.stop();
+                m_elevator.stop();
+                m_shoulder.stop();
         }
 
         
@@ -98,10 +108,20 @@ public class RobotContainer {
 
                 m_operator.povLeft().onTrue(new InstantCommand(()-> m_turret.AngleAdjust(5)));
                 m_operator.povRight().onTrue(new InstantCommand(()-> m_turret.AngleAdjust(-5)));
+
+
+                        //Stops every motor on the robot if needed. (In most cases us the E brake)
+                m_driver.a().and(m_operator.a()).onTrue(new InstantCommand(() -> HardStop)
+                                                        .alongWith(new InstantCommand(isSSM = false)));
         }
 
         public Command getAutonomousCommand() {
                 //Selects the auto command to run.
             return autoChooser.getSelected();
+        }
+
+        @Override
+        public void periodic() {
+                SmartDashboard.putData("SSM Toggled", isSSM);
         }
 }
