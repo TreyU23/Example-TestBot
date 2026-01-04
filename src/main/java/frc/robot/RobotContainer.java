@@ -84,7 +84,8 @@ public class RobotContainer {
                         //Shoot and Intake Commands.
                 m_driver.leftTrigger().whileTrue(m_SSM.manage(ManipulatorConstants.kIntakeVoltage, SubsystemID.Manipulator));
                                         //LeftTrigger = Intake.
-                m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot());
+                m_driver.rightTrigger().whileTrue(m_smartShoot.smartShoot()
+			.alongWith(new InstantCommand(()-> isSSM = false)));
                                         //RightTrigger = ShootByPose. (Turret)
                 m_driver.rightTrigger().and().rightBumper()
                                         .whileTrue(m_SSM.manage(ManipulatorConstants.kShootVoltage, SubsystemID.Manipulator));
@@ -103,11 +104,15 @@ public class RobotContainer {
 
 
                         //Manual Adjustments for Elevator and Turret.
-                m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5)));
+                m_operator.povUp().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(5))
+			.alongWith(new InstantCommand(()-> isSSM = false)));
                 m_operator.povDown().onTrue(new InstantCommand(()-> m_elevator.poseAdjust(-5)));
+			.alongWith(new InstantCommand(()-> isSSM = false)));
 
                 m_operator.povLeft().onTrue(new InstantCommand(()-> m_turret.AngleAdjust(5)));
+			.alongWith(new InstantCommand(()-> isSSM = false)));
                 m_operator.povRight().onTrue(new InstantCommand(()-> m_turret.AngleAdjust(-5)));
+			.alongWith(new InstantCommand(()-> isSSM = false)));
 
 
                         //Stops every motor on the robot if needed. (In most cases us the E brake)
